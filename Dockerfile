@@ -1,23 +1,24 @@
-# Use the official Maven image to create a build artifact.
-FROM maven:3.9.6-eclipse-temurin-21 AS build
+# Use a Maven image as the base image for building the application
+FROM maven:3.9.6-eclipse-temurin-21 AS builder
 
-# Set the working directory.
-WORKDIR /usr/src/app
-
-# Copy the source code to the working directory.
-COPY . /usr/src/app
-
-# Build the application.
-RUN mvn clean package
-
-# Use the official OpenJDK image for a lean production stage of our multi-stage build.
-FROM eclipse-temurin:21-jre-jammy
-
-# Set the working directory.
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy the jar file from the build stage to the production stage.
-COPY --from=build /usr/src/app/target/*.jar /app/app.jar
+# Copy the Maven configuration files to the container
+COPY pom.xml ./
+COPY src ./src
 
-# Run the application.
-CMD ["java", "-jar", "/app/app.jar"]
+# Build the application
+RUN mvn -B -DskipTests clean package
+
+# Use a lightweight Alpine OpenJDK image as the base image for the runtime environment
+FROM eclipse-temurin:21.0.2_13-jre
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the JAR file built in the previous stage to the container
+COPY --from=builder /app/target/*.jar /app/app.jar
+
+# Specify the command to run the application when the container starts
+CMD ["java", "-jar", "app.jar"]
