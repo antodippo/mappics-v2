@@ -21,4 +21,4 @@ WORKDIR /app
 COPY --from=builder /app/target/*.jar /app/app.jar
 
 # Specify the command to run the application when the container starts
-CMD ["java", "-jar", "app.jar"]
+CMD ["java", "-Dspring.profiles.active=prod", "-jar", "app.jar"]
