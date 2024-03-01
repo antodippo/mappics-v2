@@ -3,18 +3,15 @@ package com.antodippo.mappics.gallery
 import java.util.*
 
 class Gallery(val name: String) {
-    val id: GalleryId = GalleryId()
+
+    val id: String = UUID.randomUUID().toString()
     val createdAt: Date = Date()
-    var pictures = listOf<Picture>()
-    fun addPicture(picture: Picture) {
-        pictures = pictures.plus(picture)
-    }
-}
+    var pictures = mapOf<String, Picture>()
 
-class GalleryId {
-    private val id: UUID = UUID.randomUUID()
+    // No argument constructor for Firestore
+    constructor(): this("")
 
-    override fun toString(): String {
-        return id.toString()
+    fun savePicture(picture: Picture) {
+        pictures = pictures.plus(Pair(picture.id, picture))
     }
 }

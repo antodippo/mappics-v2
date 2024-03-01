@@ -41,7 +41,7 @@ class PictureTest {
 
     @Test
     fun `A picture can have a description`() {
-        val picture = this.createPicture()
+        val picture = PictureBuilder().createPicture()
         assertEquals("", picture.description)
         picture.description = "A test picture"
         assertEquals("A test picture", picture.description)
@@ -49,7 +49,7 @@ class PictureTest {
 
     @Test
     fun `A picture can have a long description`() {
-        val picture = this.createPicture()
+        val picture = PictureBuilder().createPicture()
         assertEquals("", picture.longDescription)
         picture.longDescription = "A test picture"
         assertEquals("A test picture", picture.longDescription)
@@ -57,7 +57,7 @@ class PictureTest {
 
     @Test
     fun `A picture can have a resized filename`() {
-        val picture = this.createPicture()
+        val picture = PictureBuilder().createPicture()
         assertEquals("", picture.resizedFilename)
         picture.resizedFilename = "test/test_resized.jpg"
         assertEquals("test/test_resized.jpg", picture.resizedFilename)
@@ -65,7 +65,7 @@ class PictureTest {
 
     @Test
     fun `A picture can have a thumbnail filename`() {
-        val picture = this.createPicture()
+        val picture = PictureBuilder().createPicture()
         assertEquals("", picture.thumbnailFilename)
         picture.thumbnailFilename = "test/test_thumbnail.jpg"
         assertEquals("test/test_thumbnail.jpg", picture.thumbnailFilename)
@@ -73,7 +73,7 @@ class PictureTest {
 
     @Test
     fun `A picture can have weather data`() {
-        val picture = this.createPicture()
+        val picture = PictureBuilder().createPicture()
         assertEquals("", picture.weather.description)
         assertEquals(0.0f, picture.weather.temperature)
         assertEquals(0.0f, picture.weather.humidity)
@@ -187,23 +187,5 @@ class PictureTest {
                 takenAt = Date()
             )
         }
-    }
-
-    private fun createPicture(): Picture {
-        return Picture(
-            "test/test.jpg",
-            ExifData(
-                make = "Canon",
-                model = "EOS 5D Mark IV",
-                exposure = "1/100",
-                aperture = "f/2.8",
-                iso = "100",
-                focalLength = "50mm",
-                gpsLatitude = 0.0f,
-                gpsLongitude = 0.0f,
-                gpsAltitude = 0.0f,
-                takenAt = Date()
-            )
-        )
     }
 }

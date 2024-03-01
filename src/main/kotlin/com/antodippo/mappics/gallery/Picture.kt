@@ -6,7 +6,7 @@ class Picture(
     val filename: String,
     val exifData: ExifData,
 ) {
-    val id: PictureId = PictureId()
+    val id: String = UUID.randomUUID().toString()
     val createdAt: Date = Date()
     var resizedFilename: String = ""
     var thumbnailFilename: String = ""
@@ -19,6 +19,23 @@ class Picture(
         pressure = 0.0f,
         windSpeed = 0.0f,
     )
+
+    // No argument constructor for Firestore
+    constructor(): this(
+        "",
+        ExifData(
+            make = "",
+            model = "",
+            exposure = "",
+            aperture = "",
+            iso = "",
+            focalLength = "",
+            gpsLatitude = 0.0f,
+            gpsLongitude = 0.0f,
+            gpsAltitude = 0.0f,
+            takenAt = Date()
+        )
+    )
 }
 
 data class WeatherData (
@@ -28,6 +45,16 @@ data class WeatherData (
     val pressure: Float,
     val windSpeed: Float,
 ) {
+
+    // No argument constructor for Firestore
+    constructor(): this(
+        description = "",
+        temperature = 0.0f,
+        humidity = 0.0f,
+        pressure = 0.0f,
+        windSpeed = 0.0f
+    )
+
     init {
         if (humidity < 0 || humidity > 100) {
             throw IllegalArgumentException("Humidity must be between 0 and 100")
@@ -47,6 +74,21 @@ data class ExifData (
     val gpsAltitude: Float,
     val takenAt: Date,
 ) {
+
+    // No argument constructor for Firestore
+    constructor(): this(
+        make = "",
+        model = "",
+        exposure = "",
+        aperture = "",
+        iso = "",
+        focalLength = "",
+        gpsLatitude = 0.0f,
+        gpsLongitude = 0.0f,
+        gpsAltitude = 0.0f,
+        takenAt = Date()
+    )
+
     init {
         if (gpsLatitude < -90 || gpsLatitude > 90) {
             throw IllegalArgumentException("Latitude must be between -90 and 90")
@@ -57,13 +99,5 @@ data class ExifData (
         if (gpsAltitude < 0) {
             throw IllegalArgumentException("Altitude must be greater than 0")
         }
-    }
-}
-
-class PictureId {
-    private val id: UUID = UUID.randomUUID()
-
-    override fun toString(): String {
-        return id.toString()
     }
 }
