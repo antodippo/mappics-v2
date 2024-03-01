@@ -6,6 +6,7 @@ class Gallery(val name: String) {
 
     val id: String = UUID.randomUUID().toString()
     val createdAt: Date = Date()
+    val slug = name.lowercase().replace(" ", "-")
     var pictures = mapOf<String, Picture>()
 
     // No argument constructor for Firestore

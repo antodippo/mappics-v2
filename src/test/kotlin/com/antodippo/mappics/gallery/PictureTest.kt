@@ -42,17 +42,17 @@ class PictureTest {
     @Test
     fun `A picture can have a description`() {
         val picture = PictureBuilder().createPicture()
-        assertEquals("", picture.description)
-        picture.description = "A test picture"
-        assertEquals("A test picture", picture.description)
+        assertEquals("Test picture", picture.description)
+        picture.description = "A different test picture"
+        assertEquals("A different test picture", picture.description)
     }
 
     @Test
     fun `A picture can have a long description`() {
         val picture = PictureBuilder().createPicture()
-        assertEquals("", picture.longDescription)
-        picture.longDescription = "A test picture"
-        assertEquals("A test picture", picture.longDescription)
+        assertEquals("This is a test picture", picture.longDescription)
+        picture.longDescription = "This is a different test picture"
+        assertEquals("This is a different test picture", picture.longDescription)
     }
 
     @Test
