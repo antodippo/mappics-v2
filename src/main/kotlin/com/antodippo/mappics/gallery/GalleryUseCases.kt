@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service
 class GalleryUseCases(@Autowired private val galleryRepository: GalleryRepository) {
 
     fun getGalleryBySlug(slug: String): Gallery {
-        return galleryRepository.getBySlug(slug)
+        return this.galleryRepository.getBySlug(slug)
     }
 
     fun getAllGalleries(): List<Gallery> {
-        return galleryRepository.list().values.toList()
+        return this.galleryRepository.list().values.toList()
     }
 }
