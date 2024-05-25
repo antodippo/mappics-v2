@@ -8,6 +8,7 @@ interface GalleryRepository {
     fun list(): Map<String, Gallery>
     fun getById(galleryId: String): Gallery
     fun getBySlug(slug: String): Gallery
+    fun getPictureFromFileName(galleryId: String, pictureFilename: String): Picture?
 }
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)

@@ -26,4 +26,12 @@ final class GalleryRepositoryInMemory: GalleryRepository {
         return galleries.values.firstOrNull { it.slug == slug }
             ?: throw GalleryNotFound("Gallery with slug $slug not found")
     }
+
+    override fun getPictureFromFileName(galleryId: String, pictureFilename: String): Picture? {
+        if (!galleries.containsKey(galleryId)) {
+            return null
+        }
+
+        return galleries[galleryId]!!.pictures.values.firstOrNull { it.filename == pictureFilename }
+    }
 }

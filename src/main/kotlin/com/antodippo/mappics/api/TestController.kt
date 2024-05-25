@@ -3,14 +3,13 @@ package com.antodippo.mappics.api
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.firestore.FirestoreOptions
 import com.google.cloud.storage.StorageOptions
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.env.Environment
 import org.springframework.web.bind.annotation.*
 import java.util.UUID
 
 @RestController
 @RequestMapping("/test")
-class HealthCheckController(@Autowired private val environment: Environment) {
+class HealthCheckController(private val environment: Environment) {
 
     @GetMapping("/")
     fun healthCheck(): String {

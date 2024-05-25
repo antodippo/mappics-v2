@@ -86,6 +86,31 @@ abstract class GalleryRepositoryAbstractTest(private val repository: GalleryRepo
         assertEquals(1, pictures.count())
         assertEquals(picture.description, pictures[picture.id]!!.description)
     }
+
+    @Test
+    fun `A picture can be retrieved by gallery id and filename`() {
+        val picture = PictureBuilder().createPicture()
+        val gallery = Gallery("Test gallery")
+        gallery.savePicture(picture)
+        repository.save(gallery)
+        //TODO Deal with eventual consistency
+        Thread.sleep(2000)
+
+        val retrievedPicture = repository.getPictureFromFileName(gallery.id, picture.filename)
+        assertEquals(picture.id, retrievedPicture!!.id)
+    }
+
+    @Test
+    fun `It returns null when a picture doesn't exist`() {
+        assertNull(repository.getPictureFromFileName("non-existing-gallery-id", "non-existing-picture.jpg"))
+
+        val gallery = Gallery("Test gallery")
+        repository.save(gallery)
+        //TODO Deal with eventual consistency
+        Thread.sleep(2000)
+
+        assertNull(repository.getPictureFromFileName(gallery.id, "non-existing-picture.jpg"))
+    }
 }
 
 class GalleryRepositoryInMemoryTest: GalleryRepositoryAbstractTest(GalleryRepositoryInMemory()) {
@@ -95,19 +120,20 @@ class GalleryRepositoryInMemoryTest: GalleryRepositoryAbstractTest(GalleryReposi
     }
 }
 
-//@Disabled("This test uses Firestore on Google Cloud, it should be run locally and not in the CI pipeline.")
-class GalleryRepositoryUsingFirestoreTest: GalleryRepositoryAbstractTest(GalleryRepositoryUsingFirestore()) {
-
+@Disabled("This test uses Firestore on Google Cloud, it should be run locally and not in the CI pipeline.")
+class GalleryRepositoryUsingFirestoreTest: GalleryRepositoryAbstractTest(
+    GalleryRepositoryUsingFirestore("mappics-215209", "galleries-test")
+) {
     @AfterEach
     fun cleanUpEach() {
         //TODO Do better than this
         val db = FirestoreOptions.getDefaultInstance().toBuilder()
-            .setProjectId(firestoreProjectId)
+            .setProjectId("mappics-215209")
             .setCredentials(GoogleCredentials.getApplicationDefault())
             .build()
             .service
-        db.collection(firestoreCollection).get().get().forEach {
-            db.collection(firestoreCollection).document(it.id).delete()
+        db.collection("galleries-test").get().get().forEach {
+            db.collection("galleries-test").document(it.id).delete()
         }
     }
 }

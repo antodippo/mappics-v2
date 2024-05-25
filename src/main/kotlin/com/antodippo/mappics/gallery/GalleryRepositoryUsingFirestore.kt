@@ -3,16 +3,16 @@ package com.antodippo.mappics.gallery
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.firestore.Firestore
 import com.google.cloud.firestore.FirestoreOptions
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
-//TODO put the project id and collection in a configuration file
-const val firestoreProjectId = "mappics-215209"
-const val firestoreCollection = "galleries-test"
-
 @Service
 @Profile("prod")
-final class GalleryRepositoryUsingFirestore: GalleryRepository {
+final class GalleryRepositoryUsingFirestore(
+    @Value("\${firestore.projectId}") private val firestoreProjectId: String,
+    @Value("\${firestore.collection}") private val firestoreCollection: String,
+): GalleryRepository {
 
     val db: Firestore = FirestoreOptions.getDefaultInstance().toBuilder()
         .setProjectId(firestoreProjectId)
@@ -55,5 +55,14 @@ final class GalleryRepositoryUsingFirestore: GalleryRepository {
         }
 
         return galleries.toMap()
+    }
+
+    override fun getPictureFromFileName(galleryId: String, pictureFilename: String): Picture? {
+        try {
+            val gallery = this.getById(galleryId)
+            return gallery.pictures.values.firstOrNull { it.filename == pictureFilename }
+        } catch (e: GalleryNotFound) {
+            return null
+        }
     }
 }

@@ -25,6 +25,17 @@ class GalleryTest {
         assertEquals(expectedSlug, gallery.slug)
     }
 
+    companion object {
+        @JvmStatic
+        fun provideGalleryNamesAndSlugs(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of("Roma", "roma"),
+                Arguments.of("San Diego", "san-diego"),
+                Arguments.of("Ho chi minh", "ho-chi-minh"),
+            );
+        }
+    }
+
     @Test
     fun `A picture can be added to a gallery`() {
         val gallery = Gallery("Test")
@@ -50,16 +61,5 @@ class GalleryTest {
         gallery.savePicture(picture)
         assertEquals(1, gallery.pictures.count())
         assertEquals("An updated description", gallery.pictures[picture.id.toString()]?.description)
-    }
-
-    companion object {
-        @JvmStatic
-        fun provideGalleryNamesAndSlugs(): Stream<Arguments> {
-            return Stream.of(
-                Arguments.of("Roma", "roma"),
-                Arguments.of("San Diego", "san-diego"),
-                Arguments.of("Ho chi minh", "ho-chi-minh"),
-            );
-        }
     }
 }

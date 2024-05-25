@@ -56,6 +56,69 @@ class PictureTest {
     }
 
     @Test
+    fun `A picture tells when it needs description`() {
+        val pictureWithNoGPSCoordinates = PictureBuilder().createPicture()
+
+        pictureWithNoGPSCoordinates.description = ""
+        pictureWithNoGPSCoordinates.longDescription = ""
+        assertFalse(pictureWithNoGPSCoordinates.needsDescription())
+
+        val pictureWithGPSCoordinates = Picture(
+            "test/test.jpg",
+            ExifData(
+                make = "Canon",
+                model = "EOS 5D Mark IV",
+                exposure = "1/100",
+                aperture = "f/2.8",
+                iso = "100",
+                focalLength = "50mm",
+                gpsLatitude = 45.0f,
+                gpsLongitude = 11.0f,
+                gpsAltitude = 22.0f,
+                takenAt = Date()
+            )
+        )
+        assertTrue(pictureWithGPSCoordinates.needsDescription())
+
+        pictureWithGPSCoordinates.description = "Test picture"
+        pictureWithGPSCoordinates.longDescription = "This is a test picture"
+        assertFalse(pictureWithGPSCoordinates.needsDescription())
+    }
+
+    @Test
+    fun `A picture tells when it needs weather data`() {
+        val pictureWithNoGPSCoordinates = PictureBuilder().createPicture()
+        assertFalse(pictureWithNoGPSCoordinates.needsWeatherData())
+
+        val pictureWithGPSCoordinates = Picture(
+            "test/test.jpg",
+            ExifData(
+                make = "Canon",
+                model = "EOS 5D Mark IV",
+                exposure = "1/100",
+                aperture = "f/2.8",
+                iso = "100",
+                focalLength = "50mm",
+                gpsLatitude = 45.0f,
+                gpsLongitude = 11.0f,
+                gpsAltitude = 22.0f,
+                takenAt = Date()
+            )
+        )
+        assertTrue(pictureWithGPSCoordinates.needsDescription())
+
+        val weatherData = WeatherData(
+            description = "Sunny",
+            temperature = 25.0f,
+            humidity = 70.0f,
+            pressure = 1013.0f,
+            windSpeed = 10.0f,
+        )
+        pictureWithGPSCoordinates.weather = weatherData
+        assertFalse(pictureWithGPSCoordinates.needsWeatherData())
+    }
+
+    @Test
     fun `A picture can have a resized filename`() {
         val picture = PictureBuilder().createPicture()
         assertEquals("", picture.resizedFilename)

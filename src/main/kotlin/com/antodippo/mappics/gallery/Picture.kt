@@ -36,6 +36,21 @@ class Picture(
             takenAt = Date()
         )
     )
+
+    private fun hasGPSCoordinates(): Boolean {
+        return this.exifData.gpsLatitude != 0.0f && this.exifData.gpsLongitude != 0.0f
+    }
+
+    fun needsDescription(): Boolean {
+        return this.hasGPSCoordinates() && this.description.isBlank() && this.longDescription.isBlank()
+    }
+
+    fun needsWeatherData(): Boolean {
+        return this.hasGPSCoordinates()
+                && this.weather.description.isBlank()
+                && this.weather.temperature == 0.0f
+                && this.weather.pressure == 0.0f
+    }
 }
 
 data class WeatherData (
@@ -45,7 +60,6 @@ data class WeatherData (
     val pressure: Float,
     val windSpeed: Float,
 ) {
-
     // No argument constructor for Firestore
     constructor(): this(
         description = "",
