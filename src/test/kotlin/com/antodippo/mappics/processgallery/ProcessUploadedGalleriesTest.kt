@@ -59,7 +59,7 @@ class ProcessUploadedGalleriesTest {
                     }]
                 }
             """)
-        ))
+        ), "dummy-api-key")
 
         // Act
         val processUploadedGalleries = ProcessUploadedGalleries(
@@ -125,7 +125,7 @@ class ProcessUploadedGalleriesTest {
 
         val fetchWeatherData = FetchWeatherDataFromVisualCrossing(HTTPClientThatAlwaysReturns(
             HttpDummyResponse(500, """ { "error": "Internal server error" } """)
-        ))
+        ), "dummy-api-key")
 
         // Act
         val processUploadedGalleries = ProcessUploadedGalleries(

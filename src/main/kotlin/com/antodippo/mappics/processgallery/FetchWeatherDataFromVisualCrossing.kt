@@ -14,7 +14,7 @@ import java.util.*
 @Service
 class FetchWeatherDataFromVisualCrossing(
     private val client: HTTPClient,
-    private val apiKey: String = System.getProperty("VISUALCROSSING_API_KEY")!!,
+    @Value("\${VISUALCROSSING_API_KEY}") private val apiKey: String,
 ): FetchWeatherData {
 
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())

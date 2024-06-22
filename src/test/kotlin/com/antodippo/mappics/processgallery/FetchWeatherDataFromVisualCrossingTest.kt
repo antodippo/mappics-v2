@@ -22,7 +22,10 @@ class FetchWeatherDataFromVisualCrossingTest {
     //TODO write a unit test
     fun `It returns weather data for valid geo coordinates and datetime`() = runBlocking {
 
-        val fetchWeatherData = FetchWeatherDataFromVisualCrossing(HTTPClientWithJavaHttpClient())
+        val fetchWeatherData = FetchWeatherDataFromVisualCrossing(
+            HTTPClientWithJavaHttpClient(),
+            dotenv()["VISUALCROSSING_API_KEY"]!!
+        )
         val weatherData = fetchWeatherData.fromGeoCoordinatesAndDatetime(
             latitude = 57.839184f,
             longitude = 25.793507f,
@@ -44,7 +47,10 @@ class FetchWeatherDataFromVisualCrossingTest {
     @Test
     fun `It throws an exception when unable to geo locate`(): Unit = runBlocking {
 
-        val fetchWeatherData = FetchWeatherDataFromVisualCrossing(HTTPClientWithJavaHttpClient())
+        val fetchWeatherData = FetchWeatherDataFromVisualCrossing(
+            HTTPClientWithJavaHttpClient(),
+            dotenv()["VISUALCROSSING_API_KEY"]!!
+        )
 
         assertThrows<UnableToFetchWeatherData> {
             fetchWeatherData.fromGeoCoordinatesAndDatetime(
