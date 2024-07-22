@@ -1,6 +1,7 @@
 package com.antodippo.mappics.processgallery
 
 import com.antodippo.mappics.galleryfilestorage.*
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
@@ -13,12 +14,16 @@ class CreatePicturesForGallery(
     @Value("\${googlestorage.thumbnailsDirectory}") private val thumbnailsDirectory: String,
 ) {
 
+    private val logger = LoggerFactory.getLogger(this::class.java)
+
     private val resizedPictureMaxWidth = 2048
     private val resizedPictureMaxHeight = 2048
     private val thumbnailPictureMaxWidth = 300
     private val thumbnailPictureMaxHeight = 300
 
     suspend fun fromUploadedPicture(uploadedPicture: UploadedPicture): Filenames {
+
+        logger.info("[Process galleries] Start resizing picture: ${uploadedPicture.filename}")
 
         val resizedPictureBytes = this.resizePicture.fromByteArrayAndDimensions(
             uploadedPicture.content, resizedPictureMaxWidth, resizedPictureMaxHeight
@@ -29,6 +34,8 @@ class CreatePicturesForGallery(
             uploadedPicture.content, thumbnailPictureMaxWidth, thumbnailPictureMaxHeight
         )
         val thumbnailPictureFilename = uploadedPicture.filename.replace(uploadsDirectory, thumbnailsDirectory)
+
+        logger.info("[Process galleries] Finish resizing picture: ${uploadedPicture.filename}")
 
         this.galleryFileStorage.savePicture(resizedPictureFilename, resizedPictureBytes)
         this.galleryFileStorage.savePicture(thumbnailPictureFilename, thumbnailPictureBytes)

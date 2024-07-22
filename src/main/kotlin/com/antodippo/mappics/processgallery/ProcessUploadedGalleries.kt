@@ -27,11 +27,11 @@ class ProcessUploadedGalleries(
         uploadedGalleries.forEach { uploadedGallery ->
 
             val gallery = Gallery(uploadedGallery.name)
-            logger.info("Start GALLERY: ${gallery.name}: ${System.currentTimeMillis()}")
+            logger.info("[Process galleries] Start GALLERY: ${gallery.name}: ${System.currentTimeMillis()}")
             val jobs = uploadedGallery.pictures.map { uploadedPicture ->
                 CoroutineScope(Dispatchers.IO).async {
                     val picture = this@ProcessUploadedGalleries.getOrCreatePicture(gallery, uploadedPicture)
-                    logger.info("Start PICTURE: ${gallery.name}.${picture.filename}: ${System.currentTimeMillis()}")
+                    logger.info("[Process galleries] Start PICTURE: ${gallery.name}.${picture.filename}: ${System.currentTimeMillis()}")
 
                     val descriptionDeferred = async { fetchLocationDescription(picture) }
                     val weatherDataDeferred = async { fetchWeatherData(picture) }
@@ -43,13 +43,13 @@ class ProcessUploadedGalleries(
                     picture.weather = weatherData
                     gallery.savePicture(picture)
 
-                    logger.info("Finish PICTURE: ${gallery.name}.${picture.filename}: ${System.currentTimeMillis()}")
+                    logger.info("[Process galleries] Finish PICTURE: ${gallery.name}.${picture.filename}: ${System.currentTimeMillis()}")
                 }
             }
             jobs.awaitAll()
 
             if(gallery.pictures.isNotEmpty()) this@ProcessUploadedGalleries.galleryRepository.save(gallery)
-            logger.info("Finish GALLERY: ${gallery.name}: ${System.currentTimeMillis()}")
+            logger.info("[Process galleries] Finish GALLERY: ${gallery.name}: ${System.currentTimeMillis()}")
         }
     }
 
@@ -72,7 +72,7 @@ class ProcessUploadedGalleries(
     }
 
     private suspend fun fetchLocationDescription(picture: Picture): LocationDescription {
-        logger.info("Start description ${picture.filename}: ${System.currentTimeMillis()}")
+        logger.info("[Process galleries] Start description ${picture.filename}: ${System.currentTimeMillis()}")
         var locationDescription = LocationDescription("", "")
         if (picture.needsDescription()) {
             try {
@@ -81,16 +81,16 @@ class ProcessUploadedGalleries(
                     picture.exifData.gpsLongitude
                 )
             } catch (e: UnableToFetchLocationDescription) {
-                logger.error("Unable to fetch description data for picture ${picture.id}", e)
+                logger.error("[Process galleries] Unable to fetch description data for picture ${picture.id}", e)
             }
         }
-        logger.info("Finish description ${picture.filename}: ${System.currentTimeMillis()}")
+        logger.info("[Process galleries] Finish description ${picture.filename}: ${System.currentTimeMillis()}")
 
         return locationDescription
     }
 
     private suspend fun fetchWeatherData(picture: Picture): WeatherData {
-        logger.info("Start weather ${picture.filename}: ${System.currentTimeMillis()}")
+        logger.info("[Process galleries] Start weather ${picture.filename}: ${System.currentTimeMillis()}")
         var weatherData = WeatherData()
         if (picture.needsWeatherData()) {
             try {
@@ -100,10 +100,10 @@ class ProcessUploadedGalleries(
                     picture.exifData.takenAt
                 )
             } catch (e: UnableToFetchWeatherData) {
-                logger.error("Unable to fetch weather data for picture ${picture.id}", e)
+                logger.error("[Process galleries] Unable to fetch weather data for picture ${picture.id}", e)
             }
         }
-        logger.info("Finish weather ${picture.filename}: ${System.currentTimeMillis()}")
+        logger.info("[Process galleries] Finish weather ${picture.filename}: ${System.currentTimeMillis()}")
 
         return weatherData
     }
