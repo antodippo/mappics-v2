@@ -6,7 +6,6 @@ import com.antodippo.mappics.galleryfilestorage.UploadedPicture
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
@@ -28,25 +27,22 @@ class ProcessUploadedGalleries(
 
             val gallery = Gallery(uploadedGallery.name)
             logger.info("[Process galleries] Start GALLERY: ${gallery.name}: ${System.currentTimeMillis()}")
-            val jobs = uploadedGallery.pictures.map { uploadedPicture ->
-                CoroutineScope(Dispatchers.IO).async {
-                    val picture = this@ProcessUploadedGalleries.getOrCreatePicture(gallery, uploadedPicture)
-                    logger.info("[Process galleries] Start PICTURE: ${gallery.name}.${picture.filename}: ${System.currentTimeMillis()}")
+            uploadedGallery.pictures.map { uploadedPicture ->
+                val picture = this@ProcessUploadedGalleries.getOrCreatePicture(gallery, uploadedPicture)
+                logger.info("[Process galleries] Start PICTURE: ${gallery.name}.${picture.filename}: ${System.currentTimeMillis()}")
 
-                    val descriptionDeferred = async { fetchLocationDescription(picture) }
-                    val weatherDataDeferred = async { fetchWeatherData(picture) }
-                    val locationDescription = descriptionDeferred.await()
-                    val weatherData = weatherDataDeferred.await()
+                val descriptionDeferred = CoroutineScope(Dispatchers.IO).async { fetchLocationDescription(picture) }
+                val weatherDataDeferred = CoroutineScope(Dispatchers.IO).async { fetchWeatherData(picture) }
+                val locationDescription = descriptionDeferred.await()
+                val weatherData = weatherDataDeferred.await()
 
-                    picture.description = locationDescription.shortDescription
-                    picture.longDescription = locationDescription.longDescription
-                    picture.weather = weatherData
-                    gallery.savePicture(picture)
+                picture.description = locationDescription.shortDescription
+                picture.longDescription = locationDescription.longDescription
+                picture.weather = weatherData
+                gallery.savePicture(picture)
 
-                    logger.info("[Process galleries] Finish PICTURE: ${gallery.name}.${picture.filename}: ${System.currentTimeMillis()}")
-                }
+                logger.info("[Process galleries] Finish PICTURE: ${gallery.name}.${picture.filename}: ${System.currentTimeMillis()}")
             }
-            jobs.awaitAll()
 
             if(gallery.pictures.isNotEmpty()) this@ProcessUploadedGalleries.galleryRepository.save(gallery)
             logger.info("[Process galleries] Finish GALLERY: ${gallery.name}: ${System.currentTimeMillis()}")
