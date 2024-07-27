@@ -14,11 +14,21 @@ final class GalleryRepositoryUsingFirestore(
     @Value("\${firestore.collection}") private val firestoreCollection: String,
 ): GalleryRepository {
 
-    val db: Firestore = FirestoreOptions.getDefaultInstance().toBuilder()
-        .setProjectId(firestoreProjectId)
-        .setCredentials(GoogleCredentials.getApplicationDefault())
-        .build()
-        .service
+    private val db: Firestore
+
+    init {
+        db = FirestoreOptions.getDefaultInstance().toBuilder()
+            .setProjectId(firestoreProjectId)
+            .setCredentials(GoogleCredentials.getApplicationDefault())
+            .setRetrySettings(
+                FirestoreOptions.getDefaultRetrySettings().toBuilder()
+                    .setMaxAttempts(10)
+                    .setTotalTimeout(org.threeten.bp.Duration.ofMinutes(5))
+                    .build()
+            )
+            .build()
+            .service
+    }
 
     override fun save(gallery: Gallery) {
         db.collection(firestoreCollection)
