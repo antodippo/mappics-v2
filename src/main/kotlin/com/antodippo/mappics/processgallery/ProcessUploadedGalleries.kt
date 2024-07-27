@@ -49,7 +49,7 @@ class ProcessUploadedGalleries(
         }
     }
 
-    private suspend fun getOrCreatePicture(gallery: Gallery, uploadedPicture: UploadedPicture): Picture {
+    private fun getOrCreatePicture(gallery: Gallery, uploadedPicture: UploadedPicture): Picture {
         var picture = this.galleryRepository.getPictureFromFileName(gallery.id, uploadedPicture.filename)
 
         if (picture == null) {

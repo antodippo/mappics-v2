@@ -21,7 +21,7 @@ class CreatePicturesForGallery(
     private val thumbnailPictureMaxWidth = 300
     private val thumbnailPictureMaxHeight = 300
 
-    suspend fun fromUploadedPicture(uploadedPicture: UploadedPicture): Filenames {
+    fun fromUploadedPicture(uploadedPicture: UploadedPicture): Filenames {
 
         logger.info("[Process galleries] Start resizing picture: ${uploadedPicture.filename}")
 
@@ -29,16 +29,15 @@ class CreatePicturesForGallery(
             uploadedPicture.content, resizedPictureMaxWidth, resizedPictureMaxHeight
         )
         val resizedPictureFilename = uploadedPicture.filename.replace(uploadsDirectory, resizedDirectory)
+        this.galleryFileStorage.savePicture(resizedPictureFilename, resizedPictureBytes)
 
         val thumbnailPictureBytes = this.resizePicture.fromByteArrayAndDimensions(
             uploadedPicture.content, thumbnailPictureMaxWidth, thumbnailPictureMaxHeight
         )
         val thumbnailPictureFilename = uploadedPicture.filename.replace(uploadsDirectory, thumbnailsDirectory)
+        this.galleryFileStorage.savePicture(thumbnailPictureFilename, thumbnailPictureBytes)
 
         logger.info("[Process galleries] Finish resizing picture: ${uploadedPicture.filename}")
-
-        this.galleryFileStorage.savePicture(resizedPictureFilename, resizedPictureBytes)
-        this.galleryFileStorage.savePicture(thumbnailPictureFilename, thumbnailPictureBytes)
 
         return Filenames(resizedPictureFilename, thumbnailPictureFilename)
     }

@@ -2,28 +2,26 @@ package com.antodippo.mappics.galleryfilestorage
 
 import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.nio.JpegWriter
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import java.io.ByteArrayInputStream
-import javax.imageio.ImageIO
 
 @Service
 class ResizePictureWithScrimage: ResizePicture {
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
-    override suspend fun fromByteArrayAndDimensions(bytes: ByteArray, width: Int, height: Int): ByteArray {
+    override fun fromByteArrayAndDimensions(bytes: ByteArray, width: Int, height: Int): ByteArray {
 
-        val pictureBuffer = withContext(Dispatchers.IO) {
-            ImageIO.read(ByteArrayInputStream(bytes))
-        }
-
+        logger.info("[Process galleries] Start reading picture")
+        val pictureBuffer = ImmutableImage.loader().fromBytes(bytes)
+        logger.info("[Process galleries] Finish reading picture")
         if (pictureBuffer.width <= width && pictureBuffer.height <= height){
             return bytes
         }
 
-        return ImmutableImage.loader()
-            .fromBytes(bytes)
-            .max(width, height)
-            .bytes(JpegWriter())
+        logger.info("[Process galleries] Start generating resized picture {${pictureBuffer.width}x${pictureBuffer.height}} to {${width}x${height}}")
+        val resizedImage = pictureBuffer.max(width, height).bytes(JpegWriter())
+        logger.info("[Process galleries] Finish generating resized picture {${pictureBuffer.width}x${pictureBuffer.height}} to {${width}x${height}}")
+
+        return resizedImage
     }
 }
