@@ -21,7 +21,7 @@ class CreatePicturesForGalleryTest {
         )
 
         val filenames = createPicturesForGallery.fromUploadedPicture(
-            UploadedPicture("uploads/rome/img_123.jpg", byteArrayOf(4,5,6))
+            UploadedPicture("uploads/rome/img_123.jpg") { byteArrayOf(1,2,3) }
         )
 
         assertEquals("resized/rome/img_123.jpg", filenames.resizedFilename)

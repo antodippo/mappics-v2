@@ -12,5 +12,7 @@ data class UploadedGallery(
 
 data class UploadedPicture(
     val filename: String,
-    val content: ByteArray
-)
+    val contentProvider: () -> ByteArray
+) {
+    val content: ByteArray by lazy { contentProvider() }
+}

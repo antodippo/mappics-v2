@@ -27,7 +27,7 @@ class GalleryFileStorageWithLocalFileSystem(
                 }
                 ?.map { pictureFile ->
                     val path = galleryDir.toString().replace(localGalleriesDirectory + uploadsDirectory, uploadsDirectory)
-                    UploadedPicture("$path/${pictureFile.name}", pictureFile.readBytes())
+                    UploadedPicture("$path/${pictureFile.name}") { pictureFile.readBytes() }
                 }
                 ?.toMutableList() ?: mutableListOf()
 

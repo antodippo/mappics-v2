@@ -23,7 +23,7 @@ class GalleryFileStorageInMemory(
         val filenameList = filename.split("/")
 
         if (filenameList[0] == "uploads") {
-            val uploadedPicture = UploadedPicture(filename, content)
+            val uploadedPicture = UploadedPicture(filename) { content }
             val galleryName = filenameList[1]
 
             val gallery = this.uploadedGalleries[galleryName] ?: UploadedGallery(galleryName, mutableListOf())

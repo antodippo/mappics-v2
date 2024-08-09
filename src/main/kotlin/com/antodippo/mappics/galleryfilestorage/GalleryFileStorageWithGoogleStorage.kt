@@ -36,18 +36,16 @@ class GalleryFileStorageWithGoogleStorage(
             }
         logger.info("[Process galleries] Finish listing galleries from Google Storage")
 
-        logger.info("[Process galleries] Start returning galleries in a list")
         return galleries.map { (galleryName, pictureBlobs) ->
             UploadedGallery(
                 galleryName,
-                // TODO check if content is too big to be loaded in memory
-                pictureBlobs.map { UploadedPicture(it.blobId.name, it.getContent()) }.toMutableList()
+                pictureBlobs.map { UploadedPicture(it.blobId.name) { it.getContent() } }.toMutableList()
             )
         }
     }
 
     override fun savePicture(filename: String, content: ByteArray) {
-        logger.info("[Process galleries] Saving picture $filename to Google Storage")
+        logger.info("[Process galleries] Saving picture $filename to Google Storage (size: ${content.size} bytes)")
         bucket.create(filename, content)
         logger.info("[Process galleries] Picture $filename saved to Google Storage")
     }
